@@ -25,7 +25,7 @@ define('urls',
             }
 
             // Check that we got the right number of arguments.
-            if (args.length != i) {
+            if (args.length !== i) {
                 console.error('Expected ' + i + ' args, got ' + args.length);
                 throw new Error('Wrong number of arguments passed to reverse(). View: "' + view_name + '", Argument "' + args + '"');
             }
@@ -61,7 +61,9 @@ define('urls',
                 args._user = user.get_token();
             }
             Object.keys(args).forEach(function(k) {
-                if (!args[k]) {
+                if (!args[k] ||
+                    settings.api_param_blacklist &&
+                    settings.api_param_blacklist.indexOf(k) !== -1) {
                     delete args[k];
                 }
             });

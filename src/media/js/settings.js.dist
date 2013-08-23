@@ -10,6 +10,7 @@ define('settings', ['l10n', 'settings_local', 'underscore'], function(l10n, sett
         storage_version: '0',
 
         param_whitelist: ['q', 'sort'],
+        api_param_blacklist: null,
 
         model_prototypes: {},
 
