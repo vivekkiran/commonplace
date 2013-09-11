@@ -28,7 +28,7 @@ info.check_version(
     src_dir,
     null,
     function(them, us) {
-        console.warn('Commonplace version does not match: ' + them + ' does not match' + us);
+        console.warn('Commonplace version does not match: ' + them + ' does not match ' + us);
     },
     function() {
         console.error('No commonplace installation found.');
