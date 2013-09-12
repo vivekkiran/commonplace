@@ -19,7 +19,7 @@
 .virtualenvs
 .zsh/cache
 TAGS
-build
+build_*
 dist
 node_modules
 npm-debug.log
