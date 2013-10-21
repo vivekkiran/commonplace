@@ -217,10 +217,11 @@ define('builder',
 
                         trigger_fragment_loaded(signature.id || null);
 
-                    }).fail(function(xhr, text, code) {
+                    }).fail(function(xhr, text, code, response) {
                         if (!replace) {
                             var el = document.getElementById(uid);
                             if (!el) return;
+                            context.ctx['response'] = response;
                             context.ctx['error'] = code;
                             el.innerHTML = except ? except() : error_template;
                         }

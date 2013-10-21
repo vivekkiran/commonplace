@@ -102,12 +102,24 @@ define('requests',
         var xhr = new XMLHttpRequest();
         var def = defer.Deferred();
 
+        function response(xhr) {
+            var data = xhr.responseText;
+            if (xhr.getResponseHeader('Content-Type').split(';', 1)[0] === 'application/json') {
+                try {
+                    return JSON.parse(data);
+                } catch(e) {
+                    // Oh well.
+                    return {};
+                }
+            }
+            return null;
+        }
+
         function error() {
-            def.reject(xhr, xhr.statusText, xhr.status);
+            def.reject(xhr, xhr.statusText, xhr.status, response(xhr));
         }
 
         xhr.addEventListener('load', function() {
-
             try {
                 if (xhr.getResponseHeader('API-Status') === 'Deprecated') {
                     callHooks('deprecated', [xhr]);
@@ -119,17 +131,7 @@ define('requests',
                 return error();
             }
 
-            var data = xhr.responseText;
-            if (xhr.getResponseHeader('Content-Type').split(';', 1)[0] === 'application/json') {
-                try {
-                    data = JSON.parse(data);
-                } catch(e) {
-                    // Oh well.
-                    data = {};
-                }
-            }
-
-            def.resolve(data, xhr);
+            def.resolve(response(xhr), xhr);
         }, false);
 
         xhr.addEventListener('error', error, false);
