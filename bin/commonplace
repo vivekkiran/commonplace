@@ -7,6 +7,7 @@ function help() {
         '',
         'Commands:',
         '  install          Run this command to instantiate commonplace.',
+        '  init             This will set up a freshly cloned copy of commonplace.',
         '  update           This command will update commonplace modules.',
         '  extract_strings  This command will extract strings into a `.pot` file.',
         '  langpacks        This command will generate langpacks out of `.po` files.',
@@ -30,6 +31,9 @@ var commonplace = require('../lib/commonplace');
 switch (argv[0]) {
     case 'install':
         commonplace.install();
+        break;
+    case 'init':
+        commonplace.init();
         break;
     case 'update':
         commonplace.update();
