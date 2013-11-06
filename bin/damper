@@ -9,7 +9,7 @@ var stylus = require('stylus');
 var utils = require('../lib/utils.js');
 var info = require('../lib/info.js');
 
-var src_dir = require('../lib/info.js').src_dir();
+var src_dir = info.src_dir();
 
 process.title = 'damper';
 
@@ -36,8 +36,34 @@ info.check_version(
     }
 );
 
-var opts = utils.opts(process.argv.slice(2),
-                      {host: '0.0.0.0', port: '8675'});
+// Get the damperrc data.
+var rc_path = path.normalize(process.env.HOME + '/.damperrc');
+var rc_data = {};
+var app_rc_data;
+if (fs.existsSync(rc_path)) {
+    console.log('Loading .damperrc');
+    var home_path = src_dir.replace(process.env.HOME, '~');
+    rc_data = JSON.parse(fs.readFileSync(rc_path));
+    app_rc_data = rc_data[src_dir] ||
+                  rc_data[home_path] ||
+                  rc_data[path.dirname(src_dir)] ||
+                  rc_data[path.dirname(home_path)];
+
+    if (app_rc_data) {
+        console.log('Loaded app settings from .damperrc');
+    }
+}
+app_rc_data = app_rc_data || {};
+
+// Get the manifest data.
+var manifest_data = info.manifest(src_dir);
+
+var default_settings = {
+    host: manifest_data.host || app_rc_data.host || '0.0.0.0',
+    port: manifest_data.port || app_rc_data.port || '8675'
+};
+
+var opts = utils.opts(process.argv.slice(2), default_settings);
 
 // Here's the local server.
 http.createServer(function(request, response) {
