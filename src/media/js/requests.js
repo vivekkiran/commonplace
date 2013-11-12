@@ -170,10 +170,17 @@ define('requests',
     }
 
     function get(url, nocache, persistent) {
+        var cached;
         if (cache.has(url) && !nocache) {
             console.log('GETing from cache', url);
+            cached = cache.get(url);
+        } else if (cache.persist.has(url) && persistent && !nocache) {
+            console.log('GETing from persistent cache', url);
+            cached = cache.persist.get(url);
+        }
+        if (cached) {
             return defer.Deferred()
-                        .resolve(cache.get(url))
+                        .resolve(cached)
                         .promise({__cached: true});
         }
         return _get.apply(this, arguments, persistent);
