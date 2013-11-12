@@ -60,8 +60,8 @@ define('utils', ['jquery', 'l10n', 'underscore'], function($, l10n, _) {
         return value;
     }
 
+    var tags = /input|keygen|meter|option|output|progress|select|textarea/i;
     function fieldFocused(e) {
-        var tags = /input|keygen|meter|option|output|progress|select|textarea/i;
         return tags.test(e.target.nodeName);
     }
 
