@@ -132,8 +132,6 @@ define('helpers',
             return obj;
         },
 
-        REGIONS: require('settings').REGION_CHOICES_SLUG,
-
         navigator: window.navigator,
         screen: window.screen,
         language: window.navigator.l10n ? window.navigator.l10n.language : 'en-US'
