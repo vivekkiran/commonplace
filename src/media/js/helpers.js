@@ -134,6 +134,7 @@ define('helpers',
 
         navigator: window.navigator,
         screen: window.screen,
+        // TODO: Pull the default value from settings.
         language: window.navigator.l10n ? window.navigator.l10n.language : 'en-US'
     };
 
