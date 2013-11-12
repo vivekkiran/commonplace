@@ -112,7 +112,7 @@ define('requests',
                     return {};
                 }
             }
-            return null;
+            return data || null;
         }
 
         function error() {
