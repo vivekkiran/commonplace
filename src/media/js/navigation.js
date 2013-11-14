@@ -5,8 +5,6 @@ define('navigation',
 
     var console = log('nav');
 
-    var encodeURIComponent = utils.encodeURIComponent;
-
     var gettext = l10n.gettext;
     var stack = [
         {path: '/', type: 'root'}
@@ -23,29 +21,9 @@ define('navigation',
             return url;
         }
 
-        var url_parts = url.split('?');
-        // If there's nothing after the `?`, return the original URL.
-        if (!url_parts[1]) {
-            return url;
-        }
-
-        var used_params = _.pick(utils.getVars(url_parts[1]), settings.param_whitelist);
-        // If there are no query params after we filter, just return the path.
-        if (!_.keys(used_params).length) {  // If there are no elements in the object...
-            return url_parts[0];  // ...just return the path.
-        }
-
-        return url_parts[0] + '?' + (
-            _.pairs(used_params)
-            .sort(function(a, b) {return a[0] < b[0];})
-            .map(function(pair) {
-                if (typeof pair[1] === 'undefined') {
-                    return encodeURIComponent(pair[0]);
-                } else {
-                    return encodeURIComponent(pair[0]) + '=' +
-                           encodeURIComponent(pair[1]);
-                }
-            }).join('&'));
+        var used_params = _.pick(utils.querystring(url), settings.param_whitelist);
+        // We can't use urlparams() because that only extends, not replaces.
+        return utils.baseurl(url) + '?' + utils.urlencode(used_params);
     }
 
     function canNavigate() {
