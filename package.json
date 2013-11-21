@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "clean-css": "1.0.x",
-    "nunjucks": "0.1.9",
+    "nunjucks": "1.0.x",
     "stylus": "0.32.x",
     "uglify-js": "2.3.x"
   },
