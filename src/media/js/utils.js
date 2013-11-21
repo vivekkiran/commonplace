@@ -87,6 +87,9 @@ define('utils', ['jquery', 'l10n', 'underscore'], function($, l10n, _) {
     }
 
     function urlencode(kwargs) {
+        if (typeof kwargs === 'string') {
+            return encodeURIComponent(kwargs);
+        }
         var params = [];
         if ('__keywords' in kwargs) {
             delete kwargs.__keywords;
