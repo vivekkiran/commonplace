@@ -1248,7 +1248,7 @@ var Environment = Obj.extend({
         if (!tmpl.render) {
             tmpl.env = this;
             tmpl.render = function(ctx, cb) {
-                return this.env.render(name, ctx, cb);
+                return this.env.render(name, ctx || {}, cb);
             };
         }
 
@@ -1297,7 +1297,7 @@ var Environment = Obj.extend({
 
 var Context = Obj.extend({
     init: function(ctx, blocks) {
-        this.ctx = ctx;
+        this.ctx = ctx || {};
         this.blocks = {};
         this.exported = [];
 
