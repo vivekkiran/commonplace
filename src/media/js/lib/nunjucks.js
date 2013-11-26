@@ -1403,11 +1403,6 @@ nunjucks.render = function(name, ctx, cb) {
 
 nunjucks.require = function(name) { return modules[name]; };
 
-if(typeof define === 'function' && define.amd) {
-    define(function() { return nunjucks; });
-}
-else {
-    window.nunjucks = nunjucks;
-}
+define('nunjucks', [], function() { return nunjucks; });
 
 })();
