@@ -1,6 +1,6 @@
 {
   "name": "commonplace",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": {
     "url": "git://github.com/mozilla/commonplace.git",
     "type": "git"
@@ -23,5 +23,4 @@
   "jshintConfig": {
     "boss": true
   }
-
 }
