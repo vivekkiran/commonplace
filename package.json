@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "clean-css": "2.0.x",
+    "jshint": "2.3.x",
     "nunjucks": "1.0.x",
     "stylus": "0.32.x",
     "uglify-js": "2.3.x"
@@ -18,5 +19,9 @@
   "bin": {
     "damper": "./bin/damper",
     "commonplace": "./bin/commonplace"
+  },
+  "jshintConfig": {
+    "boss": true
   }
+
 }
