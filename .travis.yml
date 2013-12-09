@@ -20,11 +20,29 @@ before_script:
   - "cd casperjs && git checkout 1.0.2 && cd .."  # Use Homebrew's version of casper
 script:
   - "mkdir tmpsrc"
+  - "mv -a test/ tmpsrc/test/"
   - "cd tmpsrc"
+# Create an installation.
   - "../bin/commonplace install"
+# Lint the installation.
   - "../bin/commonplace lint"
-# TODO: Uncomment these when a casper testrunner is ready.
-#  - "nohup ../bin/damper &"  # start the damper
-#  - "cd smokealarm && DISPLAY=:99.0 ../casperjs/bin/casperjs test tests"
-  - "../bin/commonplace clean"
+# Start the damper.
+  - "nohup ../bin/damper &"
+# Run the unit tests.
+  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test ./test"
+# Generate include files.
   - "../bin/commonplace includes"
+# TODO: Test that the includes are there.
+# Delete the include files.
+  - "../bin/commonplace clean"
+# TODO: Test that the includes are gone.
+# Delete a bunch of critical distributable files. Doesn't need to be exhaustive.
+  - "rm src/media/js/main.js"
+  - "rm src/media/js/rewriters.js"
+  - "rm src/media/js/routes.js"
+  - "rm src/media/js/routes_api.js"
+  - "rm src/media/js/routes_api_args.js"
+# Recreate the files; test `commonplace init`.
+  - "../bin/commonplace init"
+# Make sure `commonplace init` did what it was supposed to do.
+  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test ./test"
