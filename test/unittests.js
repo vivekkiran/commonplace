@@ -1,5 +1,5 @@
 casper.start("http://localhost:8675/tests", function() {
-    casper.test.assertExists('progress', "Unit tests have initialized");
+    console.log('Started initial navigation.');
 });
 
 casper.waitFor(function() {
