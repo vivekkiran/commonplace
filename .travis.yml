@@ -20,7 +20,7 @@ before_script:
   - "cd casperjs && git checkout 1.0.2 && cd .."  # Use Homebrew's version of casper
 script:
   - "mkdir tmpsrc"
-  - "mv -a test/ tmpsrc/test/"
+  - "mv test/ tmpsrc/test/"
   - "cd tmpsrc"
 # Create an installation.
   - "../bin/commonplace install"
