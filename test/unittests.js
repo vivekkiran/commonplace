@@ -1,5 +1,5 @@
 // Alert any errors during testing.
-cobj.on('page.error', function(err, trace) {
+casper.on('page.error', function(err, trace) {
     console.error(err);
     trace.forEach(function(item) {
         console.log('  ', item.file, ':', item.line);
