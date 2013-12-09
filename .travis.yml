@@ -29,7 +29,7 @@ script:
 # Start the damper.
   - "nohup ../bin/damper &"
 # Run the unit tests.
-  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test ./test"
+  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test test/"
 # Generate include files.
   - "../bin/commonplace includes"
 # TODO: Test that the includes are there.
@@ -45,4 +45,4 @@ script:
 # Recreate the files; test `commonplace init`.
   - "../bin/commonplace init"
 # Make sure `commonplace init` did what it was supposed to do.
-  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test ./test"
+  - "DISPLAY=:99.0 ../casperjs/bin/casperjs test test/"
