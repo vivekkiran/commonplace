@@ -2,6 +2,8 @@
 
 Commonplace is the place for reusable components for the Firefox Marketplace (mozilla/fireplace).
 
+[![Build Status](https://travis-ci.org/mozilla/commonplace.png?branch=master)](https://travis-ci.org/mozilla/commonplace)
+
 ## Getting Started
 
 ###  Install node/npm
