@@ -1,0 +1,30 @@
+branches:
+  only:
+    - master
+notifications:
+  irc:
+    channels:
+      - "irc.mozilla.org#amo-bots"
+    on_success: change
+    on_failure: change
+  email: false
+language: node_js
+node_js:
+  - "0.10"
+before_script:
+  - "export PHANTOMJS_EXECUTABLE='phantomjs --local-to-remote-url-access=yes --ignore-ssl-errors=yes'"
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "npm install"
+  - "git clone git://github.com/n1k0/casperjs.git casperjs"
+  - "cd casperjs && git checkout 1.0.2 && cd .."  # Use Homebrew's version of casper
+script:
+  - "mkdir tmpsrc"
+  - "cd tmpsrc"
+  - "../bin/commonplace install"
+  - "../bin/commonplace lint"
+# TODO: Uncomment these when a casper testrunner is ready.
+#  - "nohup ../bin/damper &"  # start the damper
+#  - "cd smokealarm && DISPLAY=:99.0 ../casperjs/bin/casperjs test tests"
+  - "../bin/commonplace clean"
+  - "../bin/commonplace includes"
