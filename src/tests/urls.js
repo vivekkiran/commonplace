@@ -67,7 +67,7 @@ test('api url', function(done, fail) {
         {
             capabilities: {firefoxOS: true, widescreen: function() { return false; }, touch: 'foo'},
             routes_api: {'homepage': '/foo/homepage'},
-            routes_api_args: function() {return function() {return function() {return {foo: 'bar'};}}},  // Functions get pre-evaluated.
+            routes_api_args: function() {return function() {return function() {return {foo: 'bar'};};}},  // Functions get pre-evaluated.
             settings: {api_url: 'api:'}
         }, function(urls) {
             var homepage_url = urls.api.url('homepage');
@@ -85,7 +85,7 @@ test('api url signage', function(done, fail) {
         {
             capabilities: {firefoxOS: true, widescreen: function() { return false; }, touch: 'foo'},
             routes_api: {'homepage': '/foo/homepage'},
-            routes_api_args: function() {return function() {return function() {return {foo: 'bar'};}}},  // Functions get pre-evaluated.
+            routes_api_args: function() {return function() {return function() {return {foo: 'bar'};};}},  // Functions get pre-evaluated.
             settings: {api_url: 'api:'}
         }, function(urls) {
             var homepage_url = urls.api.unsigned.url('homepage');
