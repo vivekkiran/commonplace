@@ -1,3 +1,11 @@
+// Alert any errors during testing.
+cobj.on('page.error', function(err, trace) {
+    console.error(err);
+    trace.forEach(function(item) {
+        console.log('  ', item.file, ':', item.line);
+    });
+});
+
 casper.start("http://localhost:8675/tests", function() {
     console.log('Started initial navigation.');
 });
