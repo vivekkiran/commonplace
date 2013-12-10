@@ -33,11 +33,11 @@ script:
 # Generate include files and test that they are there.
   - "../bin/commonplace includes"
   - "test -f src/media/js/include.js"
-  - "test -f src/media/css/include.css"
+  # - "test -f src/media/css/include.css"  # Commented because there is no CSS to generate.
 # Delete the include files and test that they are gone.
   - "../bin/commonplace clean"
   - "test ! -f src/media/js/include.js"
-  - "test ! -f src/media/css/include.css"
+  # - "test ! -f src/media/css/include.css"  # Commented because there is no CSS to remove.
 # Delete a bunch of critical distributable files. Doesn't need to be exhaustive.
   - "rm src/media/js/main.js"
   - "rm src/media/js/rewriters.js"
@@ -46,5 +46,6 @@ script:
   - "rm src/media/js/routes_api_args.js"
 # Recreate the files; test `commonplace init`.
   - "../bin/commonplace init"
+  - "../bin/commonplace compile"
 # Make sure `commonplace init` did what it was supposed to do.
   - "DISPLAY=:99.0 ../casperjs/bin/casperjs test test/"
