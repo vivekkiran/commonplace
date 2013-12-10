@@ -7,15 +7,18 @@ function help() {
         '',
         'Commands:',
         '  install          Run this command to instantiate commonplace.',
-        '  init             This will set up a freshly cloned copy of commonplace.',
-        '  update           This command will update commonplace modules.',
+        '  init             This will set up a freshly cloned copy of Commonplace.',
+        '  update           This command will update Commonplace modules.',
         '  ignore           This command will add a file to the ignored files list.',
         '  extract_strings  This command will extract strings into a `.pot` file.',
         '  langpacks        This command will generate langpacks out of `.po` files.',
         '  clean            Clean up static files, templates, and langpacks.',
         '  compile          Generate CSS from stylus and JS from templates.',
         '  includes         Combine and minify all the CSS and JS assets.',
-        '  lint             Lints the current project.'
+        '  lint             Lints the current project.',
+        '  fiddle           Installs Commonplace project dependencies.',
+        '',
+        'Read more: https://github.com/mozilla/commonplace/wiki/CLI-Tools'
     ].join('\n'));
 }
 
