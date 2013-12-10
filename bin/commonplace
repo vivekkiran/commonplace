@@ -61,6 +61,9 @@ switch (argv[0]) {
     case 'lint':
         commonplace.lint();
         break;
+    case 'fiddle':
+        commonplace.fiddle();
+        break;
     case 'help':
         help();
         break;
