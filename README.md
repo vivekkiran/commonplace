@@ -37,3 +37,7 @@ The `--gitignore` option is available for `commonplace install`. It will copy a 
 ## Updating Commonplace
 
 To update your commonplace installation, simply run `commonplace update --npm` from the root of your project. Commonplace will automatically update the global commonplace library to the latest version and update all of the shared modules.
+
+## I have questions! Where do I look for more information?
+
+You can check out the [Wiki](https://github.com/mozilla/commonplace/wiki/_pages), which has plenty of documentation about the project.
