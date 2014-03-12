@@ -108,6 +108,9 @@ define('helpers',
             return _.clone(user.get_settings());
         },
         get_permission: user.get_permission,
+        has_developed: user.has_developed,
+        has_installed: user.has_installed,
+        has_purchased: user.has_purchased,
         logged_in: user.logged_in
     };
 
@@ -115,6 +118,8 @@ define('helpers',
     var helpers = {
         api: require('urls').api.url,
         apiParams: require('urls').api.params,
+        anonApi: require('urls').api.unsigned.url,
+        anonApiParams: require('urls').api.unsigned.params,
         url: require('urls').reverse,
         media: require('urls').media,
 
