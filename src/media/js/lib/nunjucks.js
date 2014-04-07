@@ -1,4 +1,4 @@
-// Browser bundle of nunjucks 1.0.0 (slim, only works with precompiled templates)
+// Browser bundle of nunjucks 1.0.2 (slim, only works with precompiled templates)
 
 (function() {
 var modules = {};
@@ -43,7 +43,7 @@ function extend(cls, name, props) {
 
     prototype.typename = name;
 
-    var new_cls = function() {
+    var new_cls = function() { 
         if(prototype.init) {
             prototype.init.apply(this, arguments);
         }
@@ -63,7 +63,7 @@ function extend(cls, name, props) {
     return new_cls;
 }
 
-modules.object = extend(Object, "Object", {});
+modules['object'] = extend(Object, "Object", {});
 })();
 (function() {
 var ArrayProto = Array.prototype;
@@ -81,27 +81,27 @@ var lookupEscape = function(ch) {
     return escapeMap[ch];
 };
 
-var exports = modules.lib = {};
+var exports = modules['lib'] = {};
 
 exports.withPrettyErrors = function(path, withInternals, func) {
-    // try {
+    try {
         return func();
-    // } catch (e) {
-    //     if (!e.Update) {
-    //         // not one of ours, cast it
-    //         e = new exports.TemplateError(e);
-    //     }
-    //     e.Update(path);
+    } catch (e) {
+        if (!e.Update) {
+            // not one of ours, cast it
+            e = new exports.TemplateError(e);
+        }
+        e.Update(path);
 
-    //     // Unless they marked the dev flag, show them a trace from here
-    //     if (!withInternals) {
-    //         var old = e;
-    //         e = new Error(old.message);
-    //         e.name = old.name;
-    //     }
+        // Unless they marked the dev flag, show them a trace from here
+        if (!withInternals) {
+            var old = e;
+            e = new Error(old.message);
+            e.name = old.name;
+        }
 
-    //     throw e;
-    // }
+        throw e;
+    }
 };
 
 exports.TemplateError = function(message, lineno, colno) {
@@ -168,7 +168,7 @@ exports.isString = function(obj) {
 };
 
 exports.isObject = function(obj) {
-    return obj === Object(obj);
+    return ObjProto.toString.call(obj) == '[object Object]';
 };
 
 exports.groupBy = function(obj, val) {
@@ -178,6 +178,27 @@ exports.groupBy = function(obj, val) {
         var value = obj[i];
         var key = iterator(value, i);
         (result[key] || (result[key] = [])).push(value);
+    }
+    return result;
+};
+
+exports.toArray = function(obj) {
+    return Array.prototype.slice.call(obj);
+};
+
+exports.without = function(array) {
+    var result = [];
+    if (!array) {
+        return result;
+    }
+    var index = -1,
+    length = array.length,
+    contains = exports.toArray(arguments).slice(1);
+
+    while(++index < length) {
+        if(contains.indexOf(array[index]) === -1) {
+            result.push(array[index]);
+        }
     }
     return result;
 };
@@ -198,7 +219,7 @@ exports.repeat = function(char_, n) {
 };
 
 exports.each = function(obj, func, context) {
-    if(obj === null) {
+    if(obj == null) {
         return;
     }
 
@@ -214,7 +235,7 @@ exports.each = function(obj, func, context) {
 
 exports.map = function(obj, func) {
     var results = [];
-    if(obj === null) {
+    if(obj == null) {
         return results;
     }
 
@@ -235,7 +256,7 @@ exports.map = function(obj, func) {
 
 exports.asyncIter = function(arr, iter, cb) {
     var i = -1;
-
+    
     function next() {
         i++;
 
@@ -270,6 +291,44 @@ exports.asyncFor = function(obj, iter, cb) {
     next();
 };
 
+if(!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(array, searchElement /*, fromIndex */) {
+        if (array == null) {
+            throw new TypeError();
+        }
+        var t = Object(array);
+        var len = t.length >>> 0;
+        if (len === 0) {
+            return -1;
+        }
+        var n = 0;
+        if (arguments.length > 2) {
+            n = Number(arguments[2]);
+            if (n != n) { // shortcut for verifying if it's NaN
+                n = 0;
+            } else if (n != 0 && n != Infinity && n != -Infinity) {
+                n = (n > 0 || -1) * Math.floor(Math.abs(n));
+            }
+        }
+        if (n >= len) {
+            return -1;
+        }
+        var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+        for (; k < len; k++) {
+            if (k in t && t[k] === searchElement) {
+                return k;
+            }
+        }
+        return -1;
+    };
+}
+
+if(!Array.prototype.map) {
+    Array.prototype.map = function() {
+        throw new Error("map is unimplemented for this js engine");
+    };
+}
+
 exports.keys = function(obj) {
     if(Object.prototype.keys) {
         return obj.keys();
@@ -283,12 +342,12 @@ exports.keys = function(obj) {
         }
         return keys;
     }
-};
+}
 })();
 (function() {
 
-var lib = modules.lib;
-var Object = modules.object;
+var lib = modules["lib"];
+var Object = modules["object"];
 
 // Frames keep track of scoping both at compile-time and run-time so
 // we know how to access variables. Block tags can introduce special
@@ -349,14 +408,13 @@ function makeMacro(argNames, kwargNames, func) {
         var args;
         var kwargs = getKeywordArgs(arguments);
 
-        var i;
         if(argCount > argNames.length) {
             args = Array.prototype.slice.call(arguments, 0, argNames.length);
 
             // Positional arguments that should be passed in as
             // keyword arguments (essentially default values)
             var vals = Array.prototype.slice.call(arguments, args.length, argCount);
-            for(i=0; i<vals.length; i++) {
+            for(var i=0; i<vals.length; i++) {
                 if(i < kwargNames.length) {
                     kwargs[kwargNames[i]] = vals[i];
                 }
@@ -367,7 +425,7 @@ function makeMacro(argNames, kwargNames, func) {
         else if(argCount < argNames.length) {
             args = Array.prototype.slice.call(arguments, 0, argCount);
 
-            for(i=argCount; i<argNames.length; i++) {
+            for(var i=argCount; i<argNames.length; i++) {
                 var arg = argNames[i];
 
                 // Keyword arguments that should be passed as
@@ -497,6 +555,17 @@ function memberLookup(obj, val) {
     return obj[val];
 }
 
+function callWrap(obj, name, args) {
+    if(!obj) {
+        throw new Error('Unable to call `' + name + '`, which is undefined or falsey');
+    }
+    else if(typeof obj !== 'function') {
+        throw new Error('Unable to call `' + name + '`, which is not a function');
+    }
+
+    return obj.apply(this, args);
+}
+
 function contextOrFrameLookup(context, frame, name) {
     var val = frame.lookup(name);
     return (val !== undefined && val !== null) ?
@@ -553,7 +622,7 @@ function asyncAll(arr, dimen, func, cb) {
         len = arr.length;
         outputArr = new Array(len);
 
-        if(len === 0) {
+        if(len == 0) {
             cb(null, '');
         }
         else {
@@ -576,7 +645,7 @@ function asyncAll(arr, dimen, func, cb) {
         len = keys.length;
         outputArr = new Array(len);
 
-        if(len === 0) {
+        if(len == 0) {
             cb(null, '');
         }
         else {
@@ -588,7 +657,7 @@ function asyncAll(arr, dimen, func, cb) {
     }
 }
 
-modules.runtime = {
+modules['runtime'] = {
     Frame: Frame,
     makeMacro: makeMacro,
     makeKeywordArgs: makeKeywordArgs,
@@ -596,6 +665,7 @@ modules.runtime = {
     suppressValue: suppressValue,
     memberLookup: memberLookup,
     contextOrFrameLookup: contextOrFrameLookup,
+    callWrap: callWrap,
     handleError: handleError,
     isArray: lib.isArray,
     keys: lib.keys,
@@ -607,9 +677,111 @@ modules.runtime = {
 };
 })();
 (function() {
+var Obj = modules["object"];
+var lib = modules["lib"];
 
-var lib = modules.lib;
-var r = modules.runtime;
+var Loader = Obj.extend({
+    on: function(name, func) {
+        this.listeners = this.listeners || {};
+        this.listeners[name] = this.listeners[name] || [];
+        this.listeners[name].push(func);
+    },
+
+    emit: function(name /*, arg1, arg2, ...*/) {
+        var args = Array.prototype.slice.call(arguments, 1);
+
+        if(this.listeners && this.listeners[name]) {
+            lib.each(this.listeners[name], function(listener) {
+                listener.apply(null, args);
+            });
+        }
+    }
+});
+
+modules['loader'] = Loader;
+})();
+(function() {
+var Loader = modules["loader"];
+
+var WebLoader = Loader.extend({
+    init: function(baseURL, neverUpdate) {
+        // It's easy to use precompiled templates: just include them
+        // before you configure nunjucks and this will automatically
+        // pick it up and use it
+        this.precompiled = window.nunjucksPrecompiled || {};
+
+        this.baseURL = baseURL || '';
+        this.neverUpdate = neverUpdate;
+    },
+
+    getSource: function(name) {
+        if(this.precompiled[name]) {
+            return {
+                src: { type: "code",
+                       obj: this.precompiled[name] },
+                path: name
+            };
+        }
+        else {
+            var src = this.fetch(this.baseURL + '/' + name);
+            if(!src) {
+                return null;
+            }
+
+            return { src: src,
+                     path: name,
+                     noCache: !this.neverUpdate };
+        }
+    },
+
+    fetch: function(url, callback) {
+        // Only in the browser please
+        var ajax;
+        var loading = true;
+        var src;
+
+        if(window.XMLHttpRequest) { // Mozilla, Safari, ...
+            ajax = new XMLHttpRequest();
+        }
+        else if(window.ActiveXObject) { // IE 8 and older
+            ajax = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        ajax.onreadystatechange = function() {
+            if(ajax.readyState === 4 && (ajax.status === 0 || ajax.status === 200) && loading) {
+                loading = false;
+                src = ajax.responseText;
+            }
+        };
+
+        url += (url.indexOf('?') === -1 ? '?' : '&') + 's=' +
+               (new Date().getTime());
+
+        // Synchronous because this API shouldn't be used in
+        // production (pre-load compiled templates instead)
+        ajax.open('GET', url, false);
+        ajax.send();
+
+        return src;
+    }
+});
+
+modules['web-loaders'] = {
+    WebLoader: WebLoader
+};
+})();
+(function() {
+if(typeof window === 'undefined') {
+    modules['loaders'] = modules["node-loaders"];
+}
+else {
+    modules['loaders'] = modules["web-loaders"];
+}
+})();
+(function() {
+
+var lib = modules["lib"];
+var r = modules["runtime"];
 
 var filters = {
     abs: function(n) {
@@ -631,7 +803,7 @@ var filters = {
 
         if(tmp.length) {
             if(fill_with) {
-                for(i=tmp.length; i<linecount; i++) {
+                for(var i=tmp.length; i<linecount; i++) {
                     tmp.push(fill_with);
                 }
             }
@@ -712,7 +884,9 @@ var filters = {
         return str;
     },
 
-    safe: r.markSafe,
+    safe: function(str) {
+        return r.markSafe(str);
+    },
 
     first: function(arr) {
         return arr[0];
@@ -729,7 +903,7 @@ var filters = {
         var sp = lib.repeat(' ', width);
 
         for(var i=0; i<lines.length; i++) {
-            if(i === 0 && !indentfirst) {
+            if(i == 0 && !indentfirst) {
                 res += lines[i] + '\n';
             }
             else {
@@ -949,6 +1123,28 @@ var filters = {
         return str.toUpperCase();
     },
 
+    urlencode: function(obj) {
+        var enc = encodeURIComponent;
+        if (lib.isString(obj)) {
+            return enc(obj);
+        } else {
+            var parts;
+            if (lib.isArray(obj)) {
+                parts = obj.map(function(item) {
+                    return enc(item[0]) + '=' + enc(item[1]);
+                })
+            } else {
+                parts = [];
+                for (var k in obj) {
+                    if (obj.hasOwnProperty(k)) {
+                        parts.push(enc(k) + '=' + enc(obj[k]));
+                    }
+                }
+            }
+            return parts.join('&');
+        }
+    },
+
     urlize: function(str, length, nofollow) {
         if (isNaN(length)) length = Infinity;
 
@@ -1014,7 +1210,7 @@ var filters = {
 filters.d = filters['default'];
 filters.e = filters.escape;
 
-modules.filters = filters;
+modules['filters'] = filters;
 })();
 (function() {
 
@@ -1070,6 +1266,9 @@ var globals = {
         return arr;
     },
 
+    // lipsum: function(n, html, min, max) {
+    // },
+
     cycler: function() {
         return cycler(Array.prototype.slice.call(arguments));
     },
@@ -1077,16 +1276,19 @@ var globals = {
     joiner: function(sep) {
         return joiner(sep);
     }
-};
+}
 
-modules.globals = globals;
+modules['globals'] = globals;
 })();
 (function() {
-var lib = modules.lib;
-var Obj = modules.object;
-var builtin_filters = modules.filters;
-var runtime = modules.runtime;
-var globals = modules.globals;
+var lib = modules["lib"];
+var Obj = modules["object"];
+var lexer = modules["lexer"];
+var compiler = modules["compiler"];
+var builtin_filters = modules["filters"];
+var builtin_loaders = modules["loaders"];
+var runtime = modules["runtime"];
+var globals = modules["globals"];
 var Frame = runtime.Frame;
 
 var Environment = Obj.extend({
@@ -1106,14 +1308,47 @@ var Environment = Obj.extend({
         // defaults to false
         this.autoesc = !!opts.autoescape;
 
+        if(!loaders) {
+            // The filesystem loader is only available client-side
+            if(builtin_loaders.FileSystemLoader) {
+                this.loaders = [new builtin_loaders.FileSystemLoader('views')];
+            }
+            else {
+                this.loaders = [new builtin_loaders.WebLoader('/views')];
+            }
+        }
+        else {
+            this.loaders = lib.isArray(loaders) ? loaders : [loaders];
+        }
+
+        this.initCache();
         this.filters = {};
         this.asyncFilters = [];
         this.extensions = {};
         this.extensionsList = [];
 
+        if(opts.tags) {
+            lexer.setTags(opts.tags);
+        }
+
         for(var name in builtin_filters) {
             this.addFilter(name, builtin_filters[name]);
         }
+    },
+
+    initCache: function() {
+        // Caching and cache busting
+        var cache = {};
+
+        lib.each(this.loaders, function(loader) {
+            if(typeof loader.on === 'function'){
+                loader.on('update', function(template) {
+                    cache[template] = null;
+                });
+            }
+        });
+
+        this.cache = cache;
     },
 
     addExtension: function(name, extension) {
@@ -1142,10 +1377,15 @@ var Environment = Obj.extend({
         return this.filters[name];
     },
 
-    getTemplate: function(name, cb) {
+    getTemplate: function(name, eagerCompile, cb) {
         if(name && name.raw) {
             // this fixes autoescape for templates referenced in symbols
             name = name.raw;
+        }
+
+        if(lib.isFunction(eagerCompile)) {
+            cb = eagerCompile;
+            eagerCompile = false;
         }
 
         if(typeof name !== 'string') {
@@ -1153,27 +1393,84 @@ var Environment = Obj.extend({
         }
 
         var tmpl = this.cache[name];
-        var env = this;
-        tmpl.render = function(ctx, frame, cb) {
-            return this.root(env, new Context(ctx), frame, runtime, cb);
-        };
-        tmpl.getExported = function(cb) {
-            var ctx = new Context({});
-            this.root(env, ctx, new Frame(), runtime, function() {
-                cb(null, ctx.getExported());
-            });
-        };
 
         if(tmpl) {
+            if(eagerCompile) {
+                tmpl.compile();
+            }
+
             if(cb) {
-                cb.call(this, null, tmpl);
+                cb(null, tmpl);
             }
             else {
                 return tmpl;
             }
         } else {
-            throw new Error('Template not available: "' + name + '"');
+            var syncResult;
+
+            lib.asyncIter(this.loaders, function(loader, i, next, done) {
+                function handle(src) {
+                    if(src) {
+                        done(src);
+                    }
+                    else {
+                        next();
+                    }
+                }
+
+                if(loader.async) {
+                    loader.getSource(name, function(err, src) {
+                        if(err) { throw err; }
+                        handle(src);
+                    });
+                }
+                else {
+                    handle(loader.getSource(name));
+                }
+            }, function(info) {
+                if(!info) {
+                    var err = new Error('template not found: ' + name);
+                    if(cb) {
+                        cb(err);
+                    }
+                    else {
+                        throw err;
+                    }
+                }
+                else {
+                    var tmpl = new Template(info.src, this,
+                                            info.path, eagerCompile);
+
+                    if(!info.noCache) {
+                        this.cache[name] = tmpl;
+                    }
+
+                    if(cb) {
+                        cb(null, tmpl);
+                    }
+                    else {
+                        syncResult = tmpl;
+                    }
+                }
+            }.bind(this));
+
+            return syncResult;
         }
+    },
+
+    express: function(app) {
+        var env = this;
+
+        function NunjucksView(name, opts) {
+            this.name = name;
+            this.path = name;
+        }
+
+        NunjucksView.prototype.render = function(opts, cb) {
+          env.render(this.name, opts, cb);
+        };
+
+        app.set('view', NunjucksView);
     },
 
     render: function(name, ctx, cb) {
@@ -1196,7 +1493,7 @@ var Environment = Obj.extend({
                 throw err;
             }
             else {
-                tmpl.root(this, new Context(ctx || {}), new Frame(), runtime, cb || function(err, res) {
+                tmpl.render(ctx, cb || function(err, res) {
                     if(err) { throw err; }
                     syncResult = res;
                 });
@@ -1204,6 +1501,11 @@ var Environment = Obj.extend({
         });
 
         return syncResult;
+    },
+
+    renderString: function(src, ctx, cb) {
+        var tmpl = new Template(src, this);
+        return tmpl.render(ctx, cb);
     }
 });
 
@@ -1276,17 +1578,186 @@ var Context = Obj.extend({
     }
 });
 
-modules.environment = {Environment: Environment};
+var Template = Obj.extend({
+    init: function (src, env, path, eagerCompile) {
+        this.env = env || new Environment();
+
+        if(lib.isObject(src)) {
+            switch(src.type) {
+            case 'code': this.tmplProps = src.obj; break;
+            case 'string': this.tmplStr = src.obj; break;
+            }
+        }
+        else if(lib.isString(src)) {
+            this.tmplStr = src;
+        }
+        else {
+            throw new Error("src must be a string or an object describing " +
+                            "the source");
+        }
+
+        this.path = path;
+
+        if(eagerCompile) {
+            lib.withPrettyErrors(this.path,
+                                 this.env.dev,
+                                 this._compile.bind(this));
+        }
+        else {
+            this.compiled = false;
+        }
+    },
+
+    render: function(ctx, frame, cb) {
+        if (typeof ctx === 'function') {
+            cb = ctx;
+            ctx = {};
+        }
+        else if (typeof frame === 'function') {
+            cb = frame;
+            frame = null;
+        }
+
+        return lib.withPrettyErrors(this.path, this.env.dev, function() {
+            this.compile();
+
+            var context = new Context(ctx || {}, this.blocks);
+            var syncResult = null;
+
+            this.rootRenderFunc(this.env,
+                                context,
+                                frame || new Frame(),
+                                runtime,
+                                cb || function(err, res) {
+                                    if(err) { throw err; }
+                                    syncResult = res;
+                                });
+
+            return syncResult;
+        }.bind(this));
+    },
+
+    getExported: function(cb) {
+        this.compile();
+
+        // Run the rootRenderFunc to populate the context with exported vars
+        var context = new Context({}, this.blocks);
+        this.rootRenderFunc(this.env,
+                            context,
+                            new Frame(),
+                            runtime,
+                            function() {
+                                cb(null, context.getExported());
+                            });
+    },
+
+    compile: function() {
+        if(!this.compiled) {
+            this._compile();
+        }
+    },
+
+    _compile: function() {
+        var props;
+
+        if(this.tmplProps) {
+            props = this.tmplProps;
+        }
+        else {
+            var source = compiler.compile(this.tmplStr,
+                                          this.env.asyncFilters,
+                                          this.env.extensionsList,
+                                          this.path);
+            var func = new Function(source);
+            props = func();
+        }
+
+        this.blocks = this._getBlocks(props);
+        this.rootRenderFunc = props.root;
+        this.compiled = true;
+    },
+
+    _getBlocks: function(props) {
+        var blocks = {};
+
+        for(var k in props) {
+            if(k.slice(0, 2) == 'b_') {
+                blocks[k.slice(2)] = props[k];
+            }
+        }
+
+        return blocks;
+    }
+});
+
+// test code
+// var src = 'hello {% foo baz | bar %}hi{% endfoo %} end';
+// var env = new Environment(new builtin_loaders.FileSystemLoader('tests/templates', true), { dev: true });
+
+// function FooExtension() {
+//     this.tags = ['foo'];
+//     this._name = 'FooExtension';
+
+//     this.parse = function(parser, nodes) {
+//         var tok = parser.nextToken();
+//         var args = parser.parseSignature(null, true);
+//         parser.advanceAfterBlockEnd(tok.value);
+
+//         var body = parser.parseUntilBlocks('endfoo');
+//         parser.advanceAfterBlockEnd();
+
+//         return new nodes.CallExtensionAsync(this, 'run', args, [body]);
+//     };
+
+//     this.run = function(context, baz, body, cb) {
+//         cb(null, baz + '--' + body());
+//     };
+// }
+
+// env.addExtension('FooExtension', new FooExtension());
+// env.addFilter('bar', function(val, cb) {
+//     cb(null, val + '22222');
+// }, true);
+
+// var ctx = {};
+// var tmpl = new Template(src, env, null, null, true);
+// console.log("OUTPUT ---");
+
+// tmpl.render(ctx, function(err, res) {
+//     if(err) {
+//         throw err;
+//     }
+//     console.log(res);
+// });
+
+modules['environment'] = {
+    Environment: Environment,
+    Template: Template
+};
 })();
 var nunjucks;
 
-var lib = modules.lib;
-var env = modules.environment;
-var runtime = modules.runtime;
+var lib = modules["lib"];
+var env = modules["environment"];
+var compiler = modules["compiler"];
+var parser = modules["parser"];
+var lexer = modules["lexer"];
+var runtime = modules["runtime"];
+var Loader = modules["loader"];
+var loaders = modules["loaders"];
+var precompile = modules["precompile"];
 
 nunjucks = {};
 nunjucks.Environment = env.Environment;
+nunjucks.Template = env.Template;
 
+nunjucks.Loader = Loader;
+nunjucks.FileSystemLoader = loaders.FileSystemLoader;
+nunjucks.WebLoader = loaders.WebLoader;
+
+nunjucks.compiler = compiler;
+nunjucks.parser = parser;
+nunjucks.lexer = lexer;
 nunjucks.runtime = runtime;
 
 // A single instance of an environment, since this is so commonly used
@@ -1298,7 +1769,23 @@ nunjucks.configure = function(templatesPath, opts) {
         opts = templatesPath;
         templatesPath = null;
     }
-    return e = new env.Environment(null, opts);
+
+    var noWatch = 'watch' in opts ? !opts.watch : false;
+    var loader = loaders.FileSystemLoader || loaders.WebLoader;
+    e = new env.Environment(new loader(templatesPath, noWatch), opts);
+
+    if(opts && opts.express) {
+        e.express(opts.express);
+    }
+
+    return e;
+};
+
+nunjucks.compile = function(src, env, path, eagerCompile) {
+    if(!e) {
+        nunjucks.configure();
+    }
+    return new nunjucks.Template(src, env, path, eagerCompile);
 };
 
 nunjucks.render = function(name, ctx, cb) {
@@ -1309,7 +1796,26 @@ nunjucks.render = function(name, ctx, cb) {
     return e.render(name, ctx, cb);
 };
 
+nunjucks.renderString = function(src, ctx, cb) {
+    if(!e) {
+        nunjucks.configure();
+    }
+
+    return e.renderString(src, ctx, cb);
+};
+
+if(precompile) {
+    nunjucks.precompile = precompile.precompile;
+    nunjucks.precompileString = precompile.precompileString;
+}
+
 nunjucks.require = function(name) { return modules[name]; };
-define('nunjucks', [], function() { return nunjucks; });
+
+if(typeof define === 'function' && define.amd) {
+    define(function() { return nunjucks; });
+}
+else {
+    window.nunjucks = nunjucks;
+}
 
 })();
